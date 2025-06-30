@@ -28,8 +28,7 @@ public class Usuario {
         
         this.nombre = nombre.trim();
         this.peso = peso;
-        // NO establecemos ultimaActualizacion en el constructor
-        // Se establecerá la primera vez que se actualice el peso
+        
         this.ultimaActualizacion = null;
     }
 
@@ -49,7 +48,7 @@ public class Usuario {
     /**
      * Actualiza el peso del usuario
      * CORRECCIÓN: Ahora asigna correctamente el nuevo peso en lugar de restar 1kg
-     * @param nuevoPeso Nuevo peso en kg
+     * @param nuevoPeso Nuevo peso del usuario en kg
      */
     public void actualizarPeso(double nuevoPeso) {
         if (nuevoPeso < 0) {
@@ -66,7 +65,7 @@ public class Usuario {
     }
 
     /**
-     * Verifica si el usuario puede actualizar su peso (han pasado 48 horas)
+     * Verificar si el usuario puede actualizar su peso (han pasado 48 horas)
      * @return true si puede actualizar, false en caso contrario
      */
     public boolean puedeActualizarPeso() {

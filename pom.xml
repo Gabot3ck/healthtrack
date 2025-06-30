@@ -15,7 +15,6 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-
   <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -256,50 +255,108 @@
         </plugins>
     </build>
 
+    <!-- ===== AQUÍ ESTÁ LA CORRECCIÓN: SECCIÓN PROFILES ===== -->
     <profiles>
-        <!-- Profile for Integration Tests (JUnit) -->
-        <profile>
-            <id>integration-tests</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <includes>
-                                <include>**/*IntegrationTest.java</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/*Test.java</exclude>
-                                <exclude>**/*FunctionalTest.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+      <!-- Profile for Integration Tests (JUnit) -->
+      <profile>
+        <id>integration-tests</id>
+        <build>
+          <plugins>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-surefire-plugin</artifactId>
+                  <configuration>
+                      <includes>
+                          <include>**/*IntegrationTest.java</include>
+                      </includes>
+                      <excludes>
+                          <exclude>**/*Test.java</exclude>
+                          <exclude>**/*FunctionalTest.java</exclude>
+                      </excludes>
+                  </configuration>
+              </plugin>
+          </plugins>
+        </build>
+      </profile>
 
-        <!-- Profile for Performance Tests -->
-        <profile>
-            <id>performance-tests</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <includes>
-                                <include>**/*PerformanceTest.java</include>
-                            </includes>
-                            <excludes>
-                                <exclude>**/*Test.java</exclude>
-                                <exclude>**/*IntegrationTest.java</exclude>
-                                <exclude>**/*FunctionalTest.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+      <!-- Profile for Performance Tests -->
+      <profile>
+          <id>performance-tests</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-surefire-plugin</artifactId>
+                      <configuration>
+                          <includes>
+                              <include>**/*PerformanceTest.java</include>
+                          </includes>
+                          <excludes>
+                              <exclude>**/*Test.java</exclude>
+                              <exclude>**/*IntegrationTest.java</exclude>
+                              <exclude>**/*FunctionalTest.java</exclude>
+                          </excludes>
+                      </configuration>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+
+      <!-- Profile for Functional Tests (Selenium) -->
+      <profile>
+        <id>functional-tests</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <includes>
+                            <include>**/*FunctionalTest.java</include>
+                            <include>**/*FunctionalPOMTest.java</include>
+                        </includes>
+                        <excludes>
+                            <exclude>**/*Test.java</exclude>
+                            <exclude>**/*IntegrationTest.java</exclude>
+                            <exclude>**/*PerformanceTest.java</exclude>
+                        </excludes>
+                        <systemPropertyVariables>
+                            <test.browser>${test.browser}</test.browser>
+                            <test.headless>${test.headless}</test.headless>
+                            <test.base.url>${test.base.url}</test.base.url>
+                            <test.environment>${test.environment}</test.environment>
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+      </profile>
+
+      <!-- Profile for All Tests -->
+      <profile>
+          <id>all-tests</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-surefire-plugin</artifactId>
+                      <configuration>
+                          <includes>
+                              <include>**/*Test.java</include>
+                              <include>**/*IntegrationTest.java</include>
+                              <include>**/*FunctionalTest.java</include>
+                              <include>**/*PerformanceTest.java</include>
+                          </includes>
+                          <systemPropertyVariables>
+                              <test.browser>chrome</test.browser>
+                              <test.headless>true</test.headless>
+                              <java.awt.headless>true</java.awt.headless>
+                          </systemPropertyVariables>
+                      </configuration>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
     </profiles>
+
 </project>

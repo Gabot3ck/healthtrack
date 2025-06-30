@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthTrack - Monitoreo de Peso</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin: 10px 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .user-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .weight-display {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .last-update {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .error-message {
+            background: #ff4757;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #2ed573;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .warning-message {
+            background: #ffa502;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 HealthTrack</h1>
+        <p class="subtitle">Monitoreo inteligente de tu peso</p>
+
+        <!-- Formulario de Registro -->
+        <div id="registration-form">
+            <div class="form-group">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" id="nombre" placeholder="Ingresa tu nombre completo" required>
+            </div>
+            <div class="form-group">
+                <label for="peso-inicial">Peso Inicial (kg):</label>
+                <input type="number" id="peso-inicial" step="0.1" min="0" placeholder="70.5" required>
+            </div>
+            <button type="button" class="btn" id="btn-registrar">Registrarse</button>
+        </div>
+
+        <!-- Información del Usuario -->
+        <div id="user-dashboard" class="hidden">
+            <div class="user-info">
+                <h3 id="usuario-nombre">Bienvenido/a</h3>
+                <div class="weight-display" id="peso-actual">-- kg</div>
+                <div class="last-update" id="ultima-actualizacion">Sin actualizaciones</div>
+            </div>
+
+            <div class="form-group">
+                <label for="nuevo-peso">Nuevo Peso (kg):</label>
+                <input type="number" id="nuevo-peso" step="0.1" min="0" placeholder="75.0">
+            </div>
+            <button type="button" class="btn" id="btn-actualizar">Actualizar Peso</button>
+            <button type="button" class="btn" id="btn-nuevo-usuario" style="background: #666;">Nuevo Usuario</button>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+        <div id="warning-message" class="warning-message"></div>
+
+        <div class="footer">
+            <p>🔒 Tus datos están seguros | Actualización cada 48 horas</p>
+        </div>
+    </div>
+
+    <script>
+        // Simulación del comportamiento de la clase Usuario
+        class Usuario {
+            constructor(nombre, peso) {
+                if (!nombre || nombre.trim() === '') {
+                    throw new Error('El nombre del usuario no puede ser nulo o vacío');
+                }
+                if (peso < 0) {
+                    throw new Error('El peso no puede ser negativo');
+                }
+                
+                this.nombre = nombre.trim();
+                this.peso = peso;
+                this.ultimaActualizacion = null;
+            }
+
+            actualizarPeso(nuevoPeso) {
+                if (nuevoPeso < 0) {
+                    throw new Error('El peso no puede ser negativo');
+                }
+                
+                if (!this.puedeActualizarPeso()) {
+                    throw new Error('No se puede actualizar el peso. Deben pasar al menos 48 horas desde la última actualización');
+                }
+                
+                // CORRECCIÓN: Asignar el nuevo peso correctamente
+                this.peso = nuevoPeso;
+                this.ultimaActualizacion = new Date();
+            }
+
+            puedeActualizarPeso() {
+                if (!this.ultimaActualizacion) {
+                    return true;
+                }
+                
+                const ahora = new Date();
+                const diferencia = ahora - this.ultimaActualizacion;
+                const horasPasadas = diferencia / (1000 * 60 * 60);
+                return horasPasadas >= 48;
+            }
+
+            horasRestantesParaActualizar() {
+                if (this.puedeActualizarPeso()) {
+                    return 0;
+                }
+                
+                const ahora = new Date();
+                const diferencia = ahora - this.ultimaActualizacion;
+                const horasPasadas = diferencia / (1000 * 60 * 60);
+                return Math.ceil(48 - horasPasadas);
+            }
+        }
+
+        // Variables globales
+        let currentUser = null;
+
+        // Referencias a elementos DOM
+        const registrationForm = document.getElementById('registration-form');
+        const userDashboard = document.getElementById('user-dashboard');
+        const nombreInput = document.getElementById('nombre');
+        const pesoInicialInput = document.getElementById('peso-inicial');
+        const nuevoPesoInput = document.getElementById('nuevo-peso');
+        const btnRegistrar = document.getElementById('btn-registrar');
+        const btnActualizar = document.getElementById('btn-actualizar');
+        const btnNuevoUsuario = document.getElementById('btn-nuevo-usuario');
+        const usuarioNombre = document.getElementById('usuario-nombre');
+        const pesoActual = document.getElementById('peso-actual');
+        const ultimaActualizacion = document.getElementById('ultima-actualizacion');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+        const warningMessage = document.getElementById('warning-message');
+
+        // Funciones de utilidad
+        function showMessage(element, message) {
+            hideAllMessages();
+            element.textContent = message;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+
+        function hideAllMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            warningMessage.style.display = 'none';
+        }
+
+        function updateUserDisplay() {
+            usuarioNombre.textContent = `Hola, ${currentUser.nombre}`;
+            pesoActual.textContent = `${currentUser.peso.toFixed(1)} kg`;
+            
+            if (currentUser.ultimaActualizacion) {
+                ultimaActualizacion.textContent = `Última actualización: ${currentUser.ultimaActualizacion.toLocaleString()}`;
+            } else {
+                ultimaActualizacion.textContent = 'Sin actualizaciones previas';
+            }
+
+            // Habilitar/deshabilitar botón de actualización
+            if (currentUser.puedeActualizarPeso()) {
+                btnActualizar.disabled = false;
+                btnActualizar.textContent = 'Actualizar Peso';
+            } else {
+                btnActualizar.disabled = true;
+                const horasRestantes = currentUser.horasRestantesParaActualizar();
+                btnActualizar.textContent = `Espera ${horasRestantes}h para actualizar`;
+            }
+        }
+
+        // Event Listeners
+        btnRegistrar.addEventListener('click', function() {
+            try {
+                const nombre = nombreInput.value.trim();
+                const peso = parseFloat(pesoInicialInput.value);
+
+                if (!nombre) {
+                    throw new Error('Por favor, ingresa tu nombre completo');
+                }
+
+                if (isNaN(peso) || peso <= 0) {
+                    throw new Error('Por favor, ingresa un peso válido mayor a 0');
+                }
+
+                currentUser = new Usuario(nombre, peso);
+                
+                registrationForm.classList.add('hidden');
+                userDashboard.classList.remove('hidden');
+                updateUserDisplay();
+                
+                showMessage(successMessage, `¡Bienvenido/a ${nombre}! Tu peso inicial de ${peso} kg ha sido registrado.`);
+                
+            } catch (error) {
+                showMessage(errorMessage, error.message);
+            }
+        });
+
+        btnActualizar.addEventListener('click', function() {
+            try {
+                const nuevoPeso = parseFloat(nuevoPesoInput.value);
+
+                if (isNaN(nuevoPeso) || nuevoPeso <= 0) {
+                    throw new Error('Por favor, ingresa un peso válido mayor a 0');
+                }
+
+                const pesoAnterior = currentUser.peso;
+                currentUser.actualizarPeso(nuevoPeso);
+                updateUserDisplay();
+                nuevoPesoInput.value = '';
+                
+                const diferencia = nuevoPeso - pesoAnterior;
+                let mensaje = `Peso actualizado correctamente a ${nuevoPeso} kg.`;
+                
+                if (diferencia > 0) {
+                    mensaje += ` (+${diferencia.toFixed(1)} kg)`;
+                } else if (diferencia < 0) {
+                    mensaje += ` (${diferencia.toFixed(1)} kg)`;
+                }
+                
+                showMessage(successMessage, mensaje);
+                
+            } catch (error) {
+                showMessage(errorMessage, error.message);
+            }
+        });
+
+        btnNuevoUsuario.addEventListener('click', function() {
+            currentUser = null;
+            registrationForm.classList.remove('hidden');
+            userDashboard.classList.add('hidden');
+            nombreInput.value = '';
+            pesoInicialInput.value = '';
+            nuevoPesoInput.value = '';
+            hideAllMessages();
+        });
+
+        // Permitir registro con Enter
+        [nombreInput, pesoInicialInput].forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    btnRegistrar.click();
+                }
+            });
+        });
+
+        // Permitir actualización con Enter
+        nuevoPesoInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                btnActualizar.click();
+            }
+        });
+
+        // Inicialización
+        hideAllMessages();
+    </script>
+</body>
+</html>
