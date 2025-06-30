@@ -65,3 +65,20 @@ application-local.properties
 application-dev.properties
 uploads/
 temp/
+
+# JaCoCo coverage reports
+**/jacoco.exec
+**/jacoco-it.exec
+
+# Selenium WebDriver
+**/chromedriver
+**/geckodriver
+selenium-*.log
+
+# SonarQube analysis files
+.sonar/
+.scannerwork/
+
+# OWASP Dependency Check
+dependency-check-report.html
+dependency-check-report.xml
